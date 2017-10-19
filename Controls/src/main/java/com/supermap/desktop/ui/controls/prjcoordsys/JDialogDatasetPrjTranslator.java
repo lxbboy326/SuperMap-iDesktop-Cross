@@ -100,7 +100,6 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 		@Override
 		public void setOKButtonEnabled(boolean isEnabled) {
 			panelButton.getButtonOk().setEnabled(isEnabled && isOKSourcePrj && isHasResultDataset);
-
 		}
 	};
 
@@ -189,7 +188,7 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 			this.isOKSourcePrj = dataset.getPrjCoordSys().getType() != PrjCoordSysType.PCS_NON_EARTH;
 			//this.isOKTargetPrj = null != panelTargetCoordSys.getTargetPrjCoordSys();
 			this.isHasResultDataset = null != panelResultDataset.getComboBoxResultDataDatasource().getSelectedDatasource();
-			this.panelButton.getButtonOk().setEnabled(isHasResultDataset && isOKSourcePrj);
+			this.panelButton.getButtonOk().setEnabled(isHasResultDataset && isOKSourcePrj && targetPrj != null);
 		} else {
 			this.panelButton.getButtonOk().setEnabled(false);
 		}
