@@ -70,6 +70,8 @@ public class MdiGroup extends JComponent {
 	 */
 	private INextAndPrePageStrategy nextAndPrePageStrategy=new LayoutVisibleIndexStrategy();
 
+	private boolean isChangeActivePage=false;
+
 	private Object userObject; // 用户对象，用来做一些用户自定义标识什么的
 
 	static {
@@ -242,9 +244,9 @@ public class MdiGroup extends JComponent {
 		}
 
 		final MdiPage oldActivePage = this.activePage;
+		this.isChangeActivePage=true;
 		this.eventsHelper.firePageActivating(new PageActivatingEvent(this, activePage, oldActivePage));
 		this.activePage = activePage;
-
 		// 更改状态重绘
 		revalidate();
 		repaint();
@@ -685,6 +687,14 @@ public class MdiGroup extends JComponent {
 
 	public void setNextAndPrePageStrategy(INextAndPrePageStrategy nextAndPrePageStrategy) {
 		this.nextAndPrePageStrategy = nextAndPrePageStrategy;
+	}
+
+	public void setChangeActivePage(boolean changeActivePage) {
+		isChangeActivePage = changeActivePage;
+	}
+
+	public boolean isChangeActivePage() {
+		return this.isChangeActivePage;
 	}
 
 	/**
