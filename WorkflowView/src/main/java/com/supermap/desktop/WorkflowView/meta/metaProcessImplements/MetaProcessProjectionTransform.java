@@ -35,7 +35,7 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 	private final static String OUTPUT_DATA = "ProjectionTransformResult";
 
 	private PrjCoordSys prjCoordSys = null;
-	private CoordSysTransParameter parameter = null;
+	private CoordSysTransParameter parameter = new CoordSysTransParameter();
 	private ParameterDatasourceConstrained parameterDatasource;
 	private ParameterSingleDataset parameterDataset;
 
@@ -58,6 +58,7 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 
 
 	private void initParameters() {
+		this.parameterTargetCoordSys.setRequisite(true);
 		this.parameterDatasource = new ParameterDatasourceConstrained();
 		this.parameterDataset = new ParameterSingleDataset();
 		this.parameterDatasource.setDescribe(CommonProperties.getString("String_SourceDatasource"));
@@ -134,6 +135,8 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JDialogPrjCoordSysTranslatorSettings dialogPrjCoordSysTranslatorSettings = new JDialogPrjCoordSysTranslatorSettings();
+				dialogPrjCoordSysTranslatorSettings.fillCoordSysTransMethodValue((CoordSysTransMethod) parameterMode.getSelectedData());
+				dialogPrjCoordSysTranslatorSettings.fillCoordSysTransParameter(parameter);
 				if (dialogPrjCoordSysTranslatorSettings.showDialog() == DialogResult.OK) {
 					parameter = dialogPrjCoordSysTranslatorSettings.getParameter();
 					parameterMode.setSelectedItem(dialogPrjCoordSysTranslatorSettings.getMethod());
