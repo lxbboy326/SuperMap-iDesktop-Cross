@@ -121,21 +121,6 @@ public class LayersTree extends JTree {
 		return this.dropTargetTemp;
 	}
 
-	// fix by lixiaoyao 2017/10/16
-	// 重写此方法，在根据坐标获取RowIndex时，不考虑x坐标，只需要考虑Y坐标；
-	// 实现只有当坐标Y超出树显示范围时，不改变选择对象，在范围内则改变选择对象
-	@Override
-	public TreePath getPathForLocation(int x, int y) {
-		TreePath closestPath = getClosestPathForLocation(x, y);
-
-		if (closestPath != null) {
-			Rectangle pathBounds = getPathBounds(closestPath);
-			if (pathBounds != null && y >= pathBounds.y && y < (pathBounds.y + pathBounds.height))
-				return closestPath;
-		}
-		return null;
-	}
-
 	public Map getMap() {
 		return currentMap;
 	}

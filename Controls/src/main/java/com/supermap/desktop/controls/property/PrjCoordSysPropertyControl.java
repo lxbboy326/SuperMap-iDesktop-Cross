@@ -1,5 +1,6 @@
 package com.supermap.desktop.controls.property;
 
+import com.supermap.data.PrjCoordSysType;
 import com.supermap.desktop.controls.ControlsProperties;
 import com.supermap.desktop.controls.utilities.ComponentUIUtilities;
 import com.supermap.desktop.enums.PropertyType;
@@ -234,13 +235,7 @@ public class PrjCoordSysPropertyControl extends AbstractPropertyControl {
 	 * 当选中数据源时，打开批量投影转换，选中数据及时打开数据集投影转换
 	 */
 	private void buttonConvertClicked() {
-		WorkspaceTree workspaceTree = UICommonToolkit.getWorkspaceManager().getWorkspaceTree();
-		TreePath selectedPath = workspaceTree.getSelectionPath();
-		DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
-		TreeNodeData selectedNodeData = (TreeNodeData) selectedNode.getUserObject();
-		NodeDataType type = selectedNodeData.getType();
-
-		if (type == NodeDataType.DATASOURCE) {
+		if (getTreeSelectedNodeDataType() == NodeDataType.DATASOURCE) {
 			JDialogBatchPrjTranslator dialogTranslator = new JDialogBatchPrjTranslator();
 			dialogTranslator.showDialog();
 		} else {
@@ -255,11 +250,28 @@ public class PrjCoordSysPropertyControl extends AbstractPropertyControl {
 		if (!covertFlag) {
 			this.buttonCopy.setEnabled(false);
 			this.buttonSet.setEnabled(false);
-			//this.buttonConvert.setEnabled(false);
 		} else {
 			this.buttonCopy.setEnabled(true);
 			this.buttonSet.setEnabled(true);
-			//this.buttonConvert.setEnabled(true);
 		}
+		// 投影转换的判断依据为：是否为平面坐标系
+		this.buttonConvert.setEnabled(getTreeSelectedNodeDataType() == NodeDataType.DATASOURCE
+				|| (!(getTreeSelectedNodeDataType() == NodeDataType.DATASOURCE) && prjHandle.getPrj().getType() != PrjCoordSysType.PCS_NON_EARTH));
+
 	}
+
+	/**
+	 * 获得当前树中选中节点类型
+	 *
+	 * @return
+	 */
+	private NodeDataType getTreeSelectedNodeDataType() {
+		WorkspaceTree workspaceTree = UICommonToolkit.getWorkspaceManager().getWorkspaceTree();
+		TreePath selectedPath = workspaceTree.getSelectionPath();
+		DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
+		TreeNodeData selectedNodeData = (TreeNodeData) selectedNode.getUserObject();
+		return selectedNodeData.getType();
+	}
+
+
 }

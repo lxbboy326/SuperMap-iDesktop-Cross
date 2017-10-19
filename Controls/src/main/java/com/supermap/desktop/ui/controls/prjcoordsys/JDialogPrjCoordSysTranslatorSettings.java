@@ -311,7 +311,7 @@ public class JDialogPrjCoordSysTranslatorSettings extends SmDialog {
 	 * 初始化投影参数的值
 	 * yuanR2017.9.25
 	 */
-	private void fillCoordSysTransParameter(CoordSysTransParameter coordSysTransParameter) {
+	public void fillCoordSysTransParameter(CoordSysTransParameter coordSysTransParameter) {
 		this.textFieldScaleDifference.setValue(coordSysTransParameter.getScaleDifference());
 		// 旋转角度单位与组件保持一致，需要是弧度，这里做一下转换。弧度转为秒
 		this.textFieldRotationX.setValue(coordSysTransParameter.getRotateX() / Math.PI * 180 * 60 * 60);
@@ -323,21 +323,9 @@ public class JDialogPrjCoordSysTranslatorSettings extends SmDialog {
 		this.textFieldTranslateZ.setValue(coordSysTransParameter.getTranslateZ());
 	}
 
-	///**
-	// * 初始化转换模式的值
-	// *
-	// * @param method
-	// */
-	//private void fillComboBoxMethod(CoordSysTransMethod method) {
-	//	this.comboBoxMethod.removeAllItems();
-	//	this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION));
-	//	this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_MOLODENSKY));
-	//	this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_MOLODENSKY_ABRIDGED));
-	//	this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_POSITION_VECTOR));
-	//	this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_COORDINATE_FRAME));
-	//	this.comboBoxMethod.addItem(CoordSysTransMethodUtilities.toString(CoordSysTransMethod.MTH_BURSA_WOLF));
-	//	this.comboBoxMethod.setSelectedItem(CoordSysTransMethodUtilities.toString(method));
-	//}
+	public void fillCoordSysTransMethodValue(CoordSysTransMethod method) {
+		this.comboBoxMethod.setSelectedItem(CoordSysTransMethodUtilities.toString(method));
+	}
 
 	private void buttonSetPrjClicked() {
 		//JDialogPrjCoordSysSettings prjSettings = new JDialogPrjCoordSysSettings();
@@ -462,9 +450,4 @@ public class JDialogPrjCoordSysTranslatorSettings extends SmDialog {
 		this.parameter.setTranslateY(Double.valueOf(this.textFieldTranslateY.getValue().toString()));
 		this.parameter.setTranslateZ(Double.valueOf(this.textFieldTranslateZ.getValue().toString()));
 	}
-
-	public void setCoordSysTransMethodValue(CoordSysTransMethod method) {
-		this.comboBoxMethod.setSelectedItem(CoordSysTransMethodUtilities.toString(method));
-	}
-
 }

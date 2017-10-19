@@ -33,7 +33,7 @@ public class PanelTargetCoordSys extends JPanel {
 	private JRadioButton radioButtonFromDatasource;
 	private JRadioButton radioButtonPrjSetting;
 	private JRadioButton radioButtonImportPrjFile;
-	private DatasourceComboBox datasource;
+	protected DatasourceComboBox datasource;
 	private SmButton buttonPrjSetting;
 	private JFileChooserControl fileChooser;
 	private PanelCoordSysInfo panelCoordSysInfo;
@@ -133,17 +133,9 @@ public class PanelTargetCoordSys extends JPanel {
 		bufferTypeButtonGroup.add(this.radioButtonPrjSetting);
 		bufferTypeButtonGroup.add(this.radioButtonImportPrjFile);
 
+		this.datasource = new DatasourceComboBox();
 		// 获得有投影坐标系的数据源
-		ArrayList<Datasource> datasourceArray = new ArrayList<>();
-		Datasources datasources = Application.getActiveApplication().getWorkspace().getDatasources();
-		if (null != datasources) {
-			for (int i = 0; i < datasources.getCount(); i++) {
-				if (!datasources.get(i).getPrjCoordSys().getType().equals(PrjCoordSysType.PCS_NON_EARTH)) {
-					datasourceArray.add(datasources.get(i));
-				}
-			}
-		}
-		this.datasource = new DatasourceComboBox(datasourceArray);
+		resetComboBox(Application.getActiveApplication().getWorkspace().getDatasources(), null);
 		this.buttonPrjSetting = new SmButton();
 
 		String moduleName = "ImportPrjFile";
@@ -160,7 +152,7 @@ public class PanelTargetCoordSys extends JPanel {
 		this.fileChooser.setEnabled(false);
 		this.fileChooser.setFileChooser(smFileChoose);
 
-		this.panelCoordSysInfo = new PanelCoordSysInfo("");
+		this.panelCoordSysInfo = new PanelCoordSysInfo("", true);
 	}
 
 	private void initializeResources() {
@@ -284,17 +276,24 @@ public class PanelTargetCoordSys extends JPanel {
 	}
 
 	/**
-	 * 设置面板是否可用
+	 * 当tree中数据改变时，当前面板comboBox中的项也发生改变
+	 * comboBox中的项过滤掉平面坐标系的数据源
 	 *
-	 * @param isEnable
+	 * @param datasources
+	 * @param selectedDatasource
 	 */
-	public void setPanelEnabled(Boolean isEnable) {
-		this.radioButtonFromDatasource.setEnabled(isEnable);
-		this.radioButtonPrjSetting.setEnabled(isEnable);
-		this.radioButtonImportPrjFile.setEnabled(isEnable);
-		this.datasource.setEnabled(isEnable);
-		this.buttonPrjSetting.setEnabled(isEnable);
-		this.fileChooser.setEnabled(isEnable);
-		this.panelCoordSysInfo.setEnabled(isEnable);
+	protected void resetComboBox(Datasources datasources, Datasource selectedDatasource) {
+		// 获得有投影坐标系的数据源
+		ArrayList<Datasource> datasourceArray = new ArrayList<>();
+		if (null != datasources) {
+			for (int i = 0; i < datasources.getCount(); i++) {
+				if (!datasources.get(i).getPrjCoordSys().getType().equals(PrjCoordSysType.PCS_NON_EARTH)) {
+					datasourceArray.add(datasources.get(i));
+				}
+			}
+		}
+		if (null != datasource) {
+			datasource.resetComboBox(datasourceArray, selectedDatasource);
+		}
 	}
 }
