@@ -24,8 +24,6 @@ import com.supermap.desktop.utilities.DatasetUtilities;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 
 /**
@@ -63,8 +61,8 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 		this.parameterDatasource = new ParameterDatasourceConstrained();
 		this.parameterDataset = new ParameterSingleDataset();
 		this.parameterDatasource.setDescribe(CommonProperties.getString("String_SourceDatasource"));
-		// 不支持可读
-		this.parameterDatasource.setReadOnlyNeeded(false);
+		//  支持可读
+		this.parameterDatasource.setReadOnlyNeeded(true);
 
 		ParameterCombine parameterCombineSource = new ParameterCombine();
 		parameterCombineSource.setDescribe(SOURCE_PANEL_DESCRIPTION);
@@ -142,17 +140,6 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 				}
 			}
 		});
-
-		this.parameterDataset.addPropertyListener(new PropertyChangeListener() {
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				if (parameterDataset.getSelectedDataset() != null) {
-					parameterSaveDataset.setEnabled(parameterDataset.getSelectedDataset().getType().equals(DatasetType.GRID)
-							|| parameterDataset.getSelectedDataset().getType().equals(DatasetType.IMAGE));
-				}
-			}
-		});
-
 	}
 
 
@@ -175,37 +162,23 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 		this.prjCoordSys = parameterTargetCoordSys.getTargetPrjCoordSys();
 		// 当未设置投影时，给定原数据集投影,防止参数为空报错-yuanR2017.9.6
 		if (this.prjCoordSys == null) {
-			this.prjCoordSys = src.getPrjCoordSys();
 			Application.getActiveApplication().getOutput().output(ProcessProperties.getString("String_NeedSetProjection"));
-			return isSuccessful;
+			return false;
 		}
 		try {
-			CoordSysTransMethod method = (CoordSysTransMethod) this.parameterMode.getSelectedData();
 			fireRunning(new RunningEvent(this, 0, "Start set geoCoorSys"));
-			if (this.parameterSaveDataset.isEnabled()) {
-				String resultDatasetName = this.parameterSaveDataset.getResultDatasource().getDatasets().getAvailableDatasetName(this.parameterSaveDataset.getDatasetName());
-				Dataset dataset = CoordSysTranslator.convert(src, this.prjCoordSys, this.parameterSaveDataset.getResultDatasource(), resultDatasetName, this.parameter, method);
-				isSuccessful = (dataset != null);
+			CoordSysTransMethod method = (CoordSysTransMethod) this.parameterMode.getSelectedData();
+			String resultDatasetName = this.parameterSaveDataset.getResultDatasource().getDatasets().getAvailableDatasetName(this.parameterSaveDataset.getDatasetName());
+			Dataset dataset = CoordSysTranslator.convert(src, this.prjCoordSys, this.parameterSaveDataset.getResultDatasource(), resultDatasetName, this.parameter, method);
+			isSuccessful = (dataset != null);
 
-				if (isSuccessful) {
-					getParameters().getOutputs().getData(OUTPUT_DATA).setValue(dataset);
-					Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_RasterSuccess"),
-							src.getDatasource().getAlias(), src.getName(), this.parameterSaveDataset.getResultDatasource().getAlias(), resultDatasetName));
-				} else {
-					Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_Failed"),
-							src.getDatasource().getAlias(), src.getName(), this.parameterSaveDataset.getResultDatasource().getAlias(), resultDatasetName));
-				}
-
+			if (isSuccessful) {
+				getParameters().getOutputs().getData(OUTPUT_DATA).setValue(dataset);
+				Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_RasterSuccess"),
+						src.getName(), src.getDatasource().getAlias(), this.parameterSaveDataset.getResultDatasource().getAlias(), resultDatasetName));
 			} else {
-				isSuccessful = CoordSysTranslator.convert(src, this.prjCoordSys, this.parameter, method);
-				if (isSuccessful) {
-					Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_VectorSuccess"),
-							src.getDatasource().getAlias(), src.getName()));
-					getParameters().getOutputs().getData(OUTPUT_DATA).setValue(src);
-				} else {
-					Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_Failed"),
-							src.getDatasource().getAlias(), src.getName()));
-				}
+				Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_Failed"),
+						src.getName(), src.getDatasource().getAlias(), this.parameterSaveDataset.getResultDatasource().getAlias(), resultDatasetName));
 			}
 		} catch (Exception e) {
 			Application.getActiveApplication().getOutput().output(e.getMessage());
@@ -226,8 +199,4 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 		return MetaKeys.PROJECTIONTRANSFORM;
 	}
 
-	@Override
-	public boolean isChangeSourceData() {
-		return true;
-	}
 }
