@@ -95,10 +95,17 @@ public class TableModelBatchPrjTranslatorDatasetsList extends DefaultTableModel 
 
 	public void setDataList(ArrayList<Dataset> datasets, Datasource targetDatasource) {
 		this.dataList.clear();
-		if (targetDatasource != null && datasets != null && datasets.size() > 0) {
-			for (int i = 0; i < datasets.size(); i++) {
-				dataList.add(new TableData(true, datasets.get(i), targetDatasource.getDatasets().getAvailableDatasetName(datasets.get(i).getName()), targetDatasource));
+		if (datasets != null && datasets.size() > 0) {
+			if (targetDatasource != null) {
+				for (int i = 0; i < datasets.size(); i++) {
+					dataList.add(new TableData(true, datasets.get(i), targetDatasource.getDatasets().getAvailableDatasetName(datasets.get(i).getName()), targetDatasource));
+				}
+			} else {
+				for (int i = 0; i < datasets.size(); i++) {
+					dataList.add(new TableData(true, datasets.get(i), datasets.get(i).getName(), null));
+				}
 			}
+
 		}
 		fireTableDataChanged();
 	}
