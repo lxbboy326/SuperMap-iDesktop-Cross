@@ -285,13 +285,15 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 	 * 结果数据面板状态由原数据集情况决定
 	 */
 	public void setResultPanelEnabled() {
-		Boolean isHasDatasource = null != panelResultDataset.getComboBoxResultDataDatasource().getSelectedDatasource();
 		Boolean isGridDatasetType = this.dataset.getSelectedDataset().getType().equals(DatasetType.GRID);
 		Boolean isImageDatasetType = this.dataset.getSelectedDataset().getType().equals(DatasetType.IMAGE);
 		Boolean isOnlyReadSourceDataset = this.dataset.getSelectedDataset().isReadOnly();
 
 		// 当原数据集是只读、影像、栅格checkBox必选中
-		this.panelResultDataset.getCheckBoxUsed().setSelected(isHasDatasource && (isOnlyReadSourceDataset || isGridDatasetType || isImageDatasetType));
-		this.panelResultDataset.getCheckBoxUsed().setEnabled(isHasDatasource && !isOnlyReadSourceDataset && !isGridDatasetType && !isImageDatasetType);
+		if (!this.panelResultDataset.getCheckBoxUsed().isSelected()) {
+			this.panelResultDataset.getCheckBoxUsed().setSelected(isOnlyReadSourceDataset || isGridDatasetType || isImageDatasetType);
+		}
+		this.panelResultDataset.getCheckBoxUsed().setEnabled(!isOnlyReadSourceDataset && !isGridDatasetType && !isImageDatasetType);
 	}
 }
+

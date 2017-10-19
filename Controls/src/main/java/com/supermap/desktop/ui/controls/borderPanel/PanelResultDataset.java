@@ -150,8 +150,7 @@ public class PanelResultDataset extends JPanel {
 	}
 
 	private void initStates() {
-		this.checkBoxUsed.setSelected(false);
-		setControlsState(checkBoxUsed.isSelected());
+		this.checkBoxUsed.setSelected(true);
 		resetDatasetName();
 	}
 

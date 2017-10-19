@@ -237,6 +237,9 @@ public class DMSLongitudeTextField extends JPanel {
 
 	private void initLayout() {
 		this.setPreferredSize(new Dimension(100, 23));
+		this.textFieldD.setPreferredSize(new Dimension(30, 23));
+		this.textFieldM.setPreferredSize(new Dimension(30, 23));
+		this.textFieldS.setPreferredSize(new Dimension(30, 23));
 		GroupLayout groupLayoutPanel = new GroupLayout(this);
 		this.setLayout(groupLayoutPanel);
 		// @formatter off
