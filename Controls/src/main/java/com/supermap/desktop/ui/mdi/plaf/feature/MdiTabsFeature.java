@@ -105,7 +105,13 @@ public class MdiTabsFeature extends AbstractMdiFeature {
 		int effectiveWidth = getEffectiveWidth();
 
 		if (getGroup() != null && this.features.size() > 0 && effectiveWidth > 0) {
-			this.lastVisibleTabIndex = this.features.size() - 1;
+			if (this.features.size()>1) {
+				this.lastVisibleTabIndex = this.features.size() - 1;
+			}else if (this.features.size()==1){
+				this.lastVisibleTabIndex=0;
+				this.firstVisibleTabIndex=0;
+				return;
+			}
 
 			processVisibleLastIndex(effectiveWidth);
 			// fix by lixiaoyao 2017/10/19
