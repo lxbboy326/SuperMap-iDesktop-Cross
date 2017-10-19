@@ -50,6 +50,10 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 
 	private transient PrjCoordSys targetPrj = null;
 
+	private Boolean isOKSourcePrj = false;
+	//private Boolean isOKTargetPrj = false;
+	private Boolean isHasResultDataset = false;
+
 
 	public CoordSysTransMethod getMethod() {
 		return this.panelReferSysTransSettings.getMethod();
@@ -95,7 +99,7 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 
 		@Override
 		public void setOKButtonEnabled(boolean isEnabled) {
-			panelButton.getButtonOk().setEnabled(isEnabled);
+			panelButton.getButtonOk().setEnabled(isEnabled && isOKSourcePrj && isHasResultDataset);
 
 		}
 	};
@@ -115,12 +119,8 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 				panelResultDataset.setResultName(dataset.getSelectedDataset().getName());
 				setResultPanelEnabled();
 				// 确定按钮是否可用： 原数据投影是否为平面坐标系、目标投影是否为空、
-				Boolean isOKSourcePrj = dataset.getSelectedDataset().getPrjCoordSys().getType() != PrjCoordSysType.PCS_NON_EARTH;
-				Boolean isOKTargetPrj = null != panelTargetCoordSys.getTargetPrjCoordSys();
-				Boolean isSelectedResultDataset = panelResultDataset.getCheckBoxUsed().isSelected();
-				Boolean isHasResultDataset = null != panelResultDataset.getComboBoxResultDataDatasource().getSelectedDatasource();
-				doSome.setOKButtonEnabled((isOKSourcePrj && isOKTargetPrj && !isSelectedResultDataset)
-						|| (isOKSourcePrj && isOKTargetPrj && isSelectedResultDataset && isHasResultDataset));
+				isOKSourcePrj = dataset.getSelectedDataset().getPrjCoordSys().getType() != PrjCoordSysType.PCS_NON_EARTH;
+				doSome.setOKButtonEnabled(isOKSourcePrj);
 			}
 		}
 	};
@@ -150,53 +150,6 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 		}
 	};
 
-	///**
-	// * 投影转换功能实现
-	// */
-	//private Boolean Translator() {
-	//	Boolean result;
-	//	try {
-	//		Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_BeginTrans_Dataset"), getSourceDataset().getName()));
-	//		if (!isSaveAsResult()) {
-	//			result = CoordSysTranslator.convert(getSourceDataset(), getTargetPrj(), getParameter(), getMethod());
-	//			if (result) {
-	//				Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_VectorSuccess"),
-	//						getSourceDataset().getName(), getSourceDataset().getDatasource().getAlias()));
-	//			} else {
-	//				Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_Failed"),
-	//						getSourceDataset().getName(), getSourceDataset().getDatasource().getAlias()));
-	//			}
-	//		} else {
-	//			Dataset targetDataset = CoordSysTranslator.convert(getSourceDataset(), getTargetPrj(), getSelectedResultDatasource(), getResultDatasetName(), getParameter(), getMethod());
-	//			result = targetDataset != null;
-	//			if (result) {
-	//				Application
-	//						.getActiveApplication()
-	//						.getOutput()
-	//						.output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_RasterSuccess"),
-	//								getSourceDataset().getName(), getSourceDataset().getDatasource().getAlias(), getResultDatasetName(), getSelectedResultDatasource().getAlias()));
-	//			} else {
-	//				Application
-	//						.getActiveApplication()
-	//						.getOutput()
-	//						.output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_Failed"),
-	//								getSourceDataset().getName(), getSourceDataset().getDatasource().getAlias()));
-	//			}
-	//			// 这种转换方式主要针对非矢量数据，转换之后会生成新的数据集，但是树的显示状态很诡异，这里对目标数据源的节点进行一次刷新
-	//			WorkspaceTreeManagerUIUtilities.refreshNode(getSelectedResultDatasource());
-	//		}
-	//	} catch (Exception e) {
-	//		result = false;
-	//		Application.getActiveApplication().getOutput().output(e);
-	//	} finally {
-	//		removeListener();
-	//		if (getParameter() != null) {
-	//			getParameter().dispose();
-	//		}
-	//	}
-	//	return result;
-	//}
-
 	public JDialogDatasetPrjTranslator() {
 		initializeComponents();
 		initializeResources();
@@ -225,19 +178,21 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 
 	private void initStates() {
 		Dataset dataset = DatasetUtilities.getDefaultDataset();
-		this.datasource.setSelectedDatasource(dataset.getDatasource());
-		this.dataset.setDatasets(dataset.getDatasource().getDatasets());
-		this.dataset.setSelectedDataset(dataset);
-		this.panelCoordSysInfo.setCoordInfo(PrjCoordSysUtilities.getDescription(dataset.getPrjCoordSys()));
-		this.panelResultDataset.setResultName(dataset.getName());
-		setResultPanelEnabled();
-		// 确定按钮是否可用： 原数据投影是否为平面坐标系、目标投影是否为空、
-		Boolean isOKSourcePrj = dataset.getPrjCoordSys().getType() != PrjCoordSysType.PCS_NON_EARTH;
-		Boolean isOKTargetPrj = null != panelTargetCoordSys.getTargetPrjCoordSys();
-		Boolean isSelectedResultDataset = panelResultDataset.getCheckBoxUsed().isSelected();
-		Boolean isHasResultDataset = null != panelResultDataset.getComboBoxResultDataDatasource().getSelectedDatasource();
-		this.panelButton.getButtonOk().setEnabled((isOKSourcePrj && isOKTargetPrj && !isSelectedResultDataset)
-				|| (isOKSourcePrj && isOKTargetPrj && isSelectedResultDataset && isHasResultDataset));
+		if (dataset != null) {
+			this.datasource.setSelectedDatasource(dataset.getDatasource());
+			this.dataset.setDatasets(dataset.getDatasource().getDatasets());
+			this.dataset.setSelectedDataset(dataset);
+			this.panelCoordSysInfo.setCoordInfo(PrjCoordSysUtilities.getDescription(dataset.getPrjCoordSys()));
+			this.panelResultDataset.setResultName(dataset.getName());
+			setResultPanelEnabled();
+			// 确定按钮是否可用： 原数据投影是否为平面坐标系、目标投影是否为空、
+			this.isOKSourcePrj = dataset.getPrjCoordSys().getType() != PrjCoordSysType.PCS_NON_EARTH;
+			//this.isOKTargetPrj = null != panelTargetCoordSys.getTargetPrjCoordSys();
+			this.isHasResultDataset = null != panelResultDataset.getComboBoxResultDataDatasource().getSelectedDatasource();
+			this.panelButton.getButtonOk().setEnabled(isHasResultDataset && isOKSourcePrj);
+		} else {
+			this.panelButton.getButtonOk().setEnabled(false);
+		}
 	}
 
 
@@ -330,12 +285,13 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 	 * 结果数据面板状态由原数据集情况决定
 	 */
 	public void setResultPanelEnabled() {
+		Boolean isHasDatasource = null != panelResultDataset.getComboBoxResultDataDatasource().getSelectedDatasource();
 		Boolean isGridDatasetType = this.dataset.getSelectedDataset().getType().equals(DatasetType.GRID);
 		Boolean isImageDatasetType = this.dataset.getSelectedDataset().getType().equals(DatasetType.IMAGE);
 		Boolean isOnlyReadSourceDataset = this.dataset.getSelectedDataset().isReadOnly();
 
 		// 当原数据集是只读、影像、栅格checkBox必选中
-		this.panelResultDataset.getCheckBoxUsed().setSelected(isOnlyReadSourceDataset || isGridDatasetType || isImageDatasetType);
-		this.panelResultDataset.getCheckBoxUsed().setEnabled(!isOnlyReadSourceDataset && !isGridDatasetType && !isImageDatasetType);
+		this.panelResultDataset.getCheckBoxUsed().setSelected(isHasDatasource && (isOnlyReadSourceDataset || isGridDatasetType || isImageDatasetType));
+		this.panelResultDataset.getCheckBoxUsed().setEnabled(isHasDatasource && !isOnlyReadSourceDataset && !isGridDatasetType && !isImageDatasetType);
 	}
 }
