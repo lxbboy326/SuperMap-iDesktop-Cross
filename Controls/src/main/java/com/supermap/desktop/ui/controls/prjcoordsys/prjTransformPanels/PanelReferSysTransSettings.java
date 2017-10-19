@@ -22,7 +22,7 @@ import java.awt.event.ItemListener;
  */
 public class PanelReferSysTransSettings extends JPanel {
 	private JLabel labelMethod;
-	private SmComboBox<String> comboBoxMethod;
+	private SmComboBox comboBoxMethod;
 	private JLabel labelPrjTransParameterset;
 	private SmButton buttonSet;
 	private CoordSysTransMethod method = CoordSysTransMethod.MTH_GEOCENTRIC_TRANSLATION;
@@ -55,10 +55,12 @@ public class PanelReferSysTransSettings extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			if (dialogPrjCoordSysTranslatorSettings == null) {
 				dialogPrjCoordSysTranslatorSettings = new JDialogPrjCoordSysTranslatorSettings();
-				dialogPrjCoordSysTranslatorSettings.setCoordSysTransMethodValue(CoordSysTransMethodUtilities.valueOf(comboBoxMethod.getSelectedItem().toString()));
+				dialogPrjCoordSysTranslatorSettings.fillCoordSysTransMethodValue(CoordSysTransMethodUtilities.valueOf(comboBoxMethod.getSelectedItem().toString()));
+				dialogPrjCoordSysTranslatorSettings.fillCoordSysTransParameter(parameter);
 				dialogPrjCoordSysTranslatorSettings.setVisible(true);
 			} else {
-				dialogPrjCoordSysTranslatorSettings.setCoordSysTransMethodValue(CoordSysTransMethodUtilities.valueOf(comboBoxMethod.getSelectedItem().toString()));
+				dialogPrjCoordSysTranslatorSettings.fillCoordSysTransMethodValue(CoordSysTransMethodUtilities.valueOf(comboBoxMethod.getSelectedItem().toString()));
+				dialogPrjCoordSysTranslatorSettings.fillCoordSysTransParameter(parameter);
 				dialogPrjCoordSysTranslatorSettings.setVisible(true);
 			}
 			if (dialogPrjCoordSysTranslatorSettings.getDialogResult() == DialogResult.OK) {

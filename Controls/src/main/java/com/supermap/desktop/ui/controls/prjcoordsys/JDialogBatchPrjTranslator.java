@@ -7,7 +7,6 @@ import com.supermap.desktop.ui.controls.CellRenders.TableDataCellRender;
 import com.supermap.desktop.ui.controls.DatasourceComboBox;
 import com.supermap.desktop.ui.controls.DialogResult;
 import com.supermap.desktop.ui.controls.GridBagConstraintsHelper;
-import com.supermap.desktop.ui.controls.ProviderLabel.WarningOrHelpProvider;
 import com.supermap.desktop.ui.controls.SmDialog;
 import com.supermap.desktop.ui.controls.borderPanel.PanelButton;
 import com.supermap.desktop.ui.controls.prjcoordsys.prjTransformPanels.PanelCoordSysInfo;
@@ -47,7 +46,7 @@ public class JDialogBatchPrjTranslator extends SmDialog {
 
 	// 目标数据面板块
 	private JPanel panelTargetData;
-	private WarningOrHelpProvider labelTargetDatasource;
+	private JLabel labelTargetDatasource;
 	private DatasourceComboBox targetDatasource;
 	private PanelCoordSysInfo targetPanelCoordSysInfo;
 
@@ -204,13 +203,13 @@ public class JDialogBatchPrjTranslator extends SmDialog {
 		this.panelSourceData = new JPanel();
 		this.labelSourceDatasource = new JLabel("sourceDatasource");
 		this.sourceDatasource = new DatasourceComboBox();
-		this.sourcePanelCoordSysInfo = new PanelCoordSysInfo("");
+		this.sourcePanelCoordSysInfo = new PanelCoordSysInfo("", false);
 
 		// 目标数据面板块
 		this.panelTargetData = new JPanel();
-		this.labelTargetDatasource = new WarningOrHelpProvider(ControlsProperties.getString("String_TipText_NonsupportNullProjectionDatasource"), false);
+		this.labelTargetDatasource = new JLabel();
 		this.targetDatasource = new DatasourceComboBox();
-		this.targetPanelCoordSysInfo = new PanelCoordSysInfo("");
+		this.targetPanelCoordSysInfo = new PanelCoordSysInfo("", true);
 		// 参照系转换设置面板块
 		this.panelReferSysTransSettings = new PanelReferSysTransSettings("");
 		//数据集列表
@@ -310,7 +309,8 @@ public class JDialogBatchPrjTranslator extends SmDialog {
 	private ArrayList getAvailableDatasets(Datasets datasets) {
 		ArrayList<Dataset> availableDatasets = new ArrayList();
 		for (int i = 0; i < datasets.getCount(); i++) {
-			if (datasets.get(i).getPrjCoordSys().getType() != PrjCoordSysType.PCS_NON_EARTH) {
+			// 属性表数据集无法进行投影转换，去除
+			if (datasets.get(i).getPrjCoordSys().getType() != PrjCoordSysType.PCS_NON_EARTH && !datasets.get(i).getType().equals(DatasetType.TABULAR)) {
 				availableDatasets.add(datasets.get(i));
 			}
 		}
