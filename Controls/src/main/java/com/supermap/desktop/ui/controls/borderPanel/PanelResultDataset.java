@@ -8,13 +8,17 @@ import com.supermap.desktop.ui.controls.DatasourceComboBox;
 import com.supermap.desktop.utilities.StringUtilities;
 
 import javax.swing.*;
-import java.awt.event.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
  * Created by yuanR on 2017/9/26 0026.
  * 结果数据集面板，支持自定义默认结果数据集名称、边框添加CheckBox控件控制面板是否可用
  * <p>
- * 优化：当combox为空时，整个功能不可用
  */
 public class PanelResultDataset extends JPanel {
 	/**
@@ -52,54 +56,29 @@ public class PanelResultDataset extends JPanel {
 		this.resultName = defaultResultDatasetName;
 		this.isAddCheckBox = isAddChecoBox;
 		initComponent();
-		setPanelResultDataLayout();
+		initLayout();
+		initListener();
 		initResources();
-		initComboBoxResultDataDatasource();
-		resetDatasetName();
+		initStates();
 		setComponentName();
-		if (this.isAddCheckBox) {
-			this.compTitledPane = new CompTitledPane(this.checkBoxUsed, this);
-		} else {
-			this.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_Label_ResultDataSetting")));
-		}
 	}
 
 
 	private void initComponent() {
 		this.checkBoxUsed = new JCheckBox();
-		this.checkBoxUsed.setSelected(true);
 		this.labelResultDatasetName = new JLabel();
 		this.labelDatasource = new JLabel();
 		this.comboBoxResultDataDatasource = new DatasourceComboBox();
+		for (int i = this.comboBoxResultDataDatasource.getItemCount() - 1; i >= 0; i--) {
+			if (this.comboBoxResultDataDatasource.getItemAt(i) instanceof Datasource && this.comboBoxResultDataDatasource.getItemAt(i).isReadOnly()) {
+				this.comboBoxResultDataDatasource.removeItemAt(i);
+			}
+		}
 		this.textFieldResultDatasetName = new JTextField();
-
-		this.checkBoxUsed.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				setControlsState(checkBoxUsed.isSelected());
-			}
-		});
-		this.comboBoxResultDataDatasource.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				resetDatasetName();
-			}
-		});
-
-		// 给数据集名称输入框添加焦点监听，当文本框为空的时候，给予正确的数据集名称--yuanR 2017.3.3
-		this.textFieldResultDatasetName.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				if (StringUtilities.isNullOrEmpty(textFieldResultDatasetName.getText())) {
-					resetDatasetName();
-				}
-			}
-		});
-
 	}
 
 	private void initResources() {
-		this.checkBoxUsed.setText(ControlsProperties.getString("String_Label_ResultDataSetting"));
+		this.checkBoxUsed.setText(ControlsProperties.getString("String_Title_ResultSaveAs"));
 		this.labelDatasource.setText(ControlsProperties.getString("String_Label_Datasource"));
 		this.labelResultDatasetName.setText(ControlsProperties.getString("String_Label_Dataset"));
 	}
@@ -109,7 +88,14 @@ public class PanelResultDataset extends JPanel {
 		ComponentUIUtilities.setName(this.textFieldResultDatasetName, "PanelResultData_textFieldResultDataDataset");
 	}
 
-	private void setPanelResultDataLayout() {
+	private void initLayout() {
+
+		if (this.isAddCheckBox) {
+			this.compTitledPane = new CompTitledPane(this.checkBoxUsed, this);
+		} else {
+			this.setBorder(BorderFactory.createTitledBorder(ControlsProperties.getString("String_Label_ResultDataSetting")));
+		}
+
 		GroupLayout panelResultDataLayout = new GroupLayout(this);
 		panelResultDataLayout.setAutoCreateGaps(true);
 		panelResultDataLayout.setAutoCreateContainerGaps(true);
@@ -134,13 +120,39 @@ public class PanelResultDataset extends JPanel {
 		//@formatter:on
 	}
 
-	private void initComboBoxResultDataDatasource() {
 
-		for (int i = this.comboBoxResultDataDatasource.getItemCount() - 1; i >= 0; i--) {
-			if (this.comboBoxResultDataDatasource.getItemAt(i) instanceof Datasource && this.comboBoxResultDataDatasource.getItemAt(i).isReadOnly()) {
-				this.comboBoxResultDataDatasource.removeItemAt(i);
+	private void initListener() {
+
+		this.checkBoxUsed.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				setControlsState(checkBoxUsed.isSelected());
 			}
-		}
+		});
+
+		this.comboBoxResultDataDatasource.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				resetDatasetName();
+			}
+		});
+
+		// 给数据集名称输入框添加焦点监听，当文本框为空的时候，给予正确的数据集名称--yuanR 2017.3.3
+		this.textFieldResultDatasetName.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				if (StringUtilities.isNullOrEmpty(textFieldResultDatasetName.getText())) {
+					resetDatasetName();
+				}
+			}
+		});
+
+	}
+
+	private void initStates() {
+		this.checkBoxUsed.setSelected(false);
+		setControlsState(checkBoxUsed.isSelected());
+		resetDatasetName();
 	}
 
 	private void resetDatasetName() {

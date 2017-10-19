@@ -160,7 +160,7 @@ public class PanelTargetCoordSys extends JPanel {
 		this.fileChooser.setEnabled(false);
 		this.fileChooser.setFileChooser(smFileChoose);
 
-		this.panelCoordSysInfo = new PanelCoordSysInfo("");
+		this.panelCoordSysInfo = new PanelCoordSysInfo("", true);
 	}
 
 	private void initializeResources() {
