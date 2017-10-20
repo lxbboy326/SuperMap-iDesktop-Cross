@@ -1,6 +1,7 @@
 package com.supermap.desktop.process.parameters.ParameterPanels.PrjTranslator;
 
 import com.supermap.data.PrjCoordSys;
+import com.supermap.desktop.process.constraint.annotation.ParameterField;
 import com.supermap.desktop.process.enums.ParameterType;
 import com.supermap.desktop.process.parameter.interfaces.AbstractParameter;
 import com.supermap.desktop.process.parameter.interfaces.ISelectionParameter;
@@ -12,12 +13,10 @@ import java.beans.PropertyChangeEvent;
  * 目标坐标系
  */
 public class ParameterTargetCoordSys extends AbstractParameter implements ISelectionParameter {
-
-
+	@ParameterField(name = "value")
 	private PrjCoordSys targetPrjCoordSys = null;
 
 	public ParameterTargetCoordSys() {
-
 
 	}
 
@@ -36,7 +35,7 @@ public class ParameterTargetCoordSys extends AbstractParameter implements ISelec
 			oldValue = this.targetPrjCoordSys;
 			this.targetPrjCoordSys = (PrjCoordSys) item;
 		}
-		firePropertyChangeListener(new PropertyChangeEvent(this, "targetPrjCoordSysValue", oldValue, this.targetPrjCoordSys));
+		firePropertyChangeListener(new PropertyChangeEvent(this, "value", oldValue, this.targetPrjCoordSys));
 	}
 
 
