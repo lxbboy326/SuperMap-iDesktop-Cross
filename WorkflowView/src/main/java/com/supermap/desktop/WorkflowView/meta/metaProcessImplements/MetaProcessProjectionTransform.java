@@ -178,10 +178,10 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 			if (isSuccessful) {
 				getParameters().getOutputs().getData(OUTPUT_DATA).setValue(dataset);
 				Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_RasterSuccess"),
-						src.getName(), src.getDatasource().getAlias(), this.parameterSaveDataset.getResultDatasource().getAlias(), resultDatasetName));
+						src.getDatasource().getAlias(), src.getName(), this.parameterSaveDataset.getResultDatasource().getAlias(), resultDatasetName));
 			} else {
 				Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_Failed"),
-						src.getName(), src.getDatasource().getAlias(), this.parameterSaveDataset.getResultDatasource().getAlias(), resultDatasetName));
+						src.getDatasource().getAlias(), src.getName(), this.parameterSaveDataset.getResultDatasource().getAlias(), resultDatasetName));
 			}
 		} catch (Exception e) {
 			Application.getActiveApplication().getOutput().output(e.getMessage());
