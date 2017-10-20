@@ -58,10 +58,8 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 
 
 	private void initParameters() {
-		this.parameterTargetCoordSys.setRequisite(true);
 		this.parameterDatasource = new ParameterDatasourceConstrained();
 		this.parameterDataset = new ParameterSingleDataset();
-		this.parameterDatasource.setDescribe(CommonProperties.getString("String_SourceDatasource"));
 		//  支持可读
 		this.parameterDatasource.setReadOnlyNeeded(true);
 
@@ -99,7 +97,7 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 		this.parameters.addInputParameters(INPUT_DATA, DatasetTypes.DATASET, parameterCombineSource);
 		this.parameters.addOutputParameters(OUTPUT_DATA,
 				ProcessOutputResultProperties.getString("String_PrjTransformResult"),
-				DatasetTypes.DATASET, this.parameterDataset);
+				DatasetTypes.DATASET, parameterResult);
 	}
 
 	private void initParameterState() {
@@ -155,14 +153,13 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 	public boolean execute() {
 		boolean isSuccessful = false;
 		Dataset src;
-		Object value = this.getParameters().getInputs().getData(INPUT_DATA).getValue();
-		if (value != null && value instanceof Dataset) {
+		if (this.getParameters().getInputs().getData(INPUT_DATA).getValue() != null) {
 			src = (Dataset) this.getParameters().getInputs().getData(INPUT_DATA).getValue();
 		} else {
 			src = this.parameterDataset.getSelectedItem();
 		}
 
-		this.prjCoordSys = parameterTargetCoordSys.getTargetPrjCoordSys();
+		this.prjCoordSys = parameterTargetCoordSys.getSelectedItem();
 		// 当未设置投影时，给定原数据集投影,防止参数为空报错-yuanR2017.9.6
 		if (this.prjCoordSys == null) {
 			Application.getActiveApplication().getOutput().output(ProcessProperties.getString("String_NeedSetProjection"));
@@ -173,15 +170,16 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 			CoordSysTransMethod method = (CoordSysTransMethod) this.parameterMode.getSelectedData();
 			String resultDatasetName = this.parameterSaveDataset.getResultDatasource().getDatasets().getAvailableDatasetName(this.parameterSaveDataset.getDatasetName());
 			Dataset dataset = CoordSysTranslator.convert(src, this.prjCoordSys, this.parameterSaveDataset.getResultDatasource(), resultDatasetName, this.parameter, method);
+			this.getParameters().getOutputs().getData(OUTPUT_DATA).setValue(dataset);
 			isSuccessful = (dataset != null);
 
 			if (isSuccessful) {
 				getParameters().getOutputs().getData(OUTPUT_DATA).setValue(dataset);
 				Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_RasterSuccess"),
-						src.getName(), src.getDatasource().getAlias(), this.parameterSaveDataset.getResultDatasource().getAlias(), resultDatasetName));
+						src.getDatasource().getAlias(), src.getName(), this.parameterSaveDataset.getResultDatasource().getAlias(), resultDatasetName));
 			} else {
 				Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_Failed"),
-						src.getName(), src.getDatasource().getAlias(), this.parameterSaveDataset.getResultDatasource().getAlias(), resultDatasetName));
+						src.getDatasource().getAlias(), src.getName(), this.parameterSaveDataset.getResultDatasource().getAlias(), resultDatasetName));
 			}
 		} catch (Exception e) {
 			Application.getActiveApplication().getOutput().output(e.getMessage());

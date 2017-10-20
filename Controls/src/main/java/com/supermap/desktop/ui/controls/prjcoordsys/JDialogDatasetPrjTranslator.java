@@ -51,7 +51,7 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 	private transient PrjCoordSys targetPrj = null;
 
 	private Boolean isOKSourcePrj = false;
-	//private Boolean isOKTargetPrj = false;
+	private Boolean isOKTargetPrj = false;
 	private Boolean isHasResultDataset = false;
 
 
@@ -95,11 +95,12 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 		@Override
 		public void setTargetPrjCoordSys(PrjCoordSys targetPrjCoordSys) {
 			targetPrj = targetPrjCoordSys;
+			isOKTargetPrj = null != targetPrj;
 		}
 
 		@Override
 		public void setOKButtonEnabled(boolean isEnabled) {
-			panelButton.getButtonOk().setEnabled(isEnabled && isOKSourcePrj && isHasResultDataset);
+			panelButton.getButtonOk().setEnabled(isEnabled && isOKSourcePrj && isHasResultDataset && isOKTargetPrj);
 		}
 	};
 

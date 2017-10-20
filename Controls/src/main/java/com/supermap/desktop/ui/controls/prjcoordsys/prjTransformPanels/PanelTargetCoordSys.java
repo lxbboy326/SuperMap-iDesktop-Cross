@@ -37,19 +37,11 @@ public class PanelTargetCoordSys extends JPanel {
 	private SmButton buttonPrjSetting;
 	private JFileChooserControl fileChooser;
 	private PanelCoordSysInfo panelCoordSysInfo;
-	private PrjCoordSys targetPrjCoordSys = null;
+	protected PrjCoordSys targetPrjCoordSys = null;
 	private PrjCoordSys buttonSetPrjCoordSys = null;
 	private PrjCoordSys importFilePrjCoordSys = null;
 	protected DoSome doSome;
 
-	/**
-	 * 获得设置好的坐标系
-	 *
-	 * @return
-	 */
-	public PrjCoordSys getTargetPrjCoordSys() {
-		return targetPrjCoordSys;
-	}
 
 	private ActionListener actionListener = new ActionListener() {
 		@Override
