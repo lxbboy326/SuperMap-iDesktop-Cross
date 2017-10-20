@@ -17,6 +17,11 @@ public class ParameterMultiBufferRadioList extends AbstractParameter implements 
 	}
 
 	@Override
+	public boolean isRequisite() {
+		return true;
+	}
+
+	@Override
 	public void setSelectedItem(Object item) {
 		ArrayList<Double> oldValue = null;
 		if (item == null) {
@@ -32,6 +37,9 @@ public class ParameterMultiBufferRadioList extends AbstractParameter implements 
 
 	@Override
 	public ArrayList<Double> getSelectedItem() {
+		if (this.radioLists.size() <= 0) {
+			return null;
+		}
 		return this.radioLists;
 	}
 

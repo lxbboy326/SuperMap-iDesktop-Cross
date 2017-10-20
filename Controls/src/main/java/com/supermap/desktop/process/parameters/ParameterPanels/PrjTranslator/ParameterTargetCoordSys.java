@@ -22,6 +22,11 @@ public class ParameterTargetCoordSys extends AbstractParameter implements ISelec
 	}
 
 	@Override
+	public boolean isRequisite() {
+		return true;
+	}
+
+	@Override
 	public void setSelectedItem(Object item) {
 		PrjCoordSys oldValue = null;
 		if (item == null) {
@@ -35,6 +40,12 @@ public class ParameterTargetCoordSys extends AbstractParameter implements ISelec
 	}
 
 
+	/**
+	 * yuanR存疑：拖动功能到幕布上，会先走该方法，来判断参数是否为空，此时还没有setSelectedItem()
+	 * 2017.10.20
+	 *
+	 * @return
+	 */
 	@Override
 	public PrjCoordSys getSelectedItem() {
 		return this.targetPrjCoordSys;
