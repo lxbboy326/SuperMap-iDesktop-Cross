@@ -28,7 +28,7 @@ public class ParameterTargetCoordSysPanel extends PanelTargetCoordSys implements
 
 		@Override
 		public void setTargetPrjCoordSys(PrjCoordSys targetPrjCoordSys) {
-			parameterTargetCoordSys.setTargetPrjCoordSys(getTargetPrjCoordSys());
+			parameterTargetCoordSys.setSelectedItem(getTargetPrjCoordSys());
 		}
 	};
 
@@ -66,7 +66,7 @@ public class ParameterTargetCoordSysPanel extends PanelTargetCoordSys implements
 		this.parameterTargetCoordSys = (ParameterTargetCoordSys) parameterTargetCoordSys;
 		this.setPreferredSize(new Dimension(this.getWidth(), 280));
 		this.setMinimumSize(new Dimension(this.getWidth(), 280));
-		this.parameterTargetCoordSys.setTargetPrjCoordSys(getTargetPrjCoordSys());
+		this.parameterTargetCoordSys.setSelectedItem(getTargetPrjCoordSys());
 		initListener();
 
 	}

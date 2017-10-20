@@ -162,7 +162,7 @@ public class MetaProcessProjectionTransform extends MetaProcess {
 			src = this.parameterDataset.getSelectedItem();
 		}
 
-		this.prjCoordSys = parameterTargetCoordSys.getTargetPrjCoordSys();
+		this.prjCoordSys = parameterTargetCoordSys.getSelectedItem();
 		// 当未设置投影时，给定原数据集投影,防止参数为空报错-yuanR2017.9.6
 		if (this.prjCoordSys == null) {
 			Application.getActiveApplication().getOutput().output(ProcessProperties.getString("String_NeedSetProjection"));

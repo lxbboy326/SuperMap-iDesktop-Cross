@@ -75,7 +75,9 @@ public class TableModelBatchPrjTranslatorDatasetsList extends DefaultTableModel 
 		if (column == TABLE_COLUMN_ISSELECTED) {
 			dataList.get(row).setSelected((Boolean) aValue);
 		} else if (column == TABLE_COLUMN_TARGETDATASETNAME) {
-			dataList.get(row).setResultDatasetName(dataList.get(row).getTargetDatasource().getDatasets().getAvailableDatasetName(aValue.toString()));
+			if (null != dataList.get(row).getTargetDatasource()) {
+				dataList.get(row).setResultDatasetName(dataList.get(row).getTargetDatasource().getDatasets().getAvailableDatasetName(aValue.toString()));
+			}
 		}
 		fireTableDataChanged();
 	}

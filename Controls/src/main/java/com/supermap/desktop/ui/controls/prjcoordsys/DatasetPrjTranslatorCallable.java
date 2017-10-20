@@ -65,10 +65,10 @@ public class DatasetPrjTranslatorCallable extends UpdateProgressCallable {
 				result = CoordSysTranslator.convert(this.getSourceDataset, this.getTargetPrj, this.parameter, this.method);
 				if (result) {
 					Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_VectorSuccess"),
-							this.getSourceDataset.getName(), this.getSourceDataset.getDatasource().getAlias()));
+							this.getSourceDataset.getDatasource().getAlias(), this.getSourceDataset.getName()));
 				} else {
 					Application.getActiveApplication().getOutput().output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_Failed"),
-							this.getSourceDataset.getName(), this.getSourceDataset.getDatasource().getAlias()));
+							this.getSourceDataset.getDatasource().getAlias(), this.getSourceDataset.getName()));
 				}
 			} else {
 				Dataset targetDataset = CoordSysTranslator.convert(this.getSourceDataset, this.getTargetPrj, this.getSelectedResultDatasource, this.getResultDatasetName, this.parameter, this.method);
@@ -78,13 +78,13 @@ public class DatasetPrjTranslatorCallable extends UpdateProgressCallable {
 							.getActiveApplication()
 							.getOutput()
 							.output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_RasterSuccess"),
-									this.getSourceDataset.getName(), this.getSourceDataset.getDatasource().getAlias(), this.getResultDatasetName, this.getSelectedResultDatasource.getAlias()));
+									this.getSourceDataset.getDatasource().getAlias(), this.getSourceDataset.getName(), this.getResultDatasetName, this.getSelectedResultDatasource.getAlias()));
 				} else {
 					Application
 							.getActiveApplication()
 							.getOutput()
 							.output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_Failed"),
-									this.getSourceDataset.getName(), this.getSourceDataset.getDatasource().getAlias()));
+									this.getSourceDataset.getDatasource().getAlias(), this.getSourceDataset.getName()));
 				}
 			}
 		} catch (Exception e) {
