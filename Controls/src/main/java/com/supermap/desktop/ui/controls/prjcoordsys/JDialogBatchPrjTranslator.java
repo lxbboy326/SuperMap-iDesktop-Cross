@@ -76,6 +76,10 @@ public class JDialogBatchPrjTranslator extends SmDialog {
 	//private static final int TABLE_COLUMN_TARGETDATASETNAME = 2;
 	private ArrayList<TableModelBatchPrjTranslatorDatasetsList.TableData> dataList;
 
+	private Boolean isOKTargetPrj = false;
+	private Boolean isHasSelectedDataList = false;
+
+
 	/**
 	 * 数据源、数据及改变监听
 	 */
@@ -108,7 +112,8 @@ public class JDialogBatchPrjTranslator extends SmDialog {
 			}
 			checkBox.setSelected(isHasSelected);
 			table.getTableHeader().repaint();
-			panelButton.getButtonOk().setEnabled(isHasSelected);
+			isHasSelectedDataList = isHasSelected;
+			panelButton.getButtonOk().setEnabled(isHasSelectedDataList && isOKTargetPrj);
 		}
 	};
 
@@ -140,8 +145,8 @@ public class JDialogBatchPrjTranslator extends SmDialog {
 		initializeComponents();
 		initializeResources();
 		initializeLayout();
-		initStates();
 		initListener();
+		initStates();
 
 		setSize(800, 600);
 		setLocationRelativeTo(null);
@@ -173,10 +178,10 @@ public class JDialogBatchPrjTranslator extends SmDialog {
 		this.tableModel.setDataList(getAvailableDatasets(sourceDatasource.getSelectedDatasource().getDatasets()), this.targetDatasource.getSelectedDatasource());
 		this.dataList = tableModel.getDataList();
 		// 面板是否可用
-		if (null == targetDatasource.getSelectedDatasource() || this.dataList.size() == 0) {
-			this.panelButton.getButtonOk().setEnabled(false);
-		}
-
+		this.isOKTargetPrj = null != targetDatasource.getSelectedDatasource();
+		// 当目标数据集为空时，设置jtable不可用，防止错误修改
+		this.table.setEnabled(this.isOKTargetPrj);
+		this.panelButton.getButtonOk().setEnabled(this.isOKTargetPrj && this.isHasSelectedDataList);
 	}
 
 	private void removeListener() {
