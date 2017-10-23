@@ -35,14 +35,14 @@ public class ParameterTargetCoordSysPanel extends PanelTargetCoordSys implements
 	private DatasourceCreatedListener datasourceCreatedListener = new DatasourceCreatedListener() {
 		@Override
 		public void datasourceCreated(DatasourceCreatedEvent datasourceCreatedEvent) {
-			resetComboBox(Application.getActiveApplication().getWorkspace().getDatasources(), datasource.getSelectedDatasource());
+			resetDatasourceComboBox(Application.getActiveApplication().getWorkspace().getDatasources(), datasource.getSelectedDatasource());
 		}
 	};
 
 	private DatasourceOpenedListener datasourceOpenedListener = new DatasourceOpenedListener() {
 		@Override
 		public void datasourceOpened(DatasourceOpenedEvent datasourceOpenedEvent) {
-			resetComboBox(Application.getActiveApplication().getWorkspace().getDatasources(), datasource.getSelectedDatasource());
+			resetDatasourceComboBox(Application.getActiveApplication().getWorkspace().getDatasources(), datasource.getSelectedDatasource());
 		}
 	};
 
@@ -50,7 +50,7 @@ public class ParameterTargetCoordSysPanel extends PanelTargetCoordSys implements
 		@Override
 		public void datasourceClosed(DatasourceClosedEvent datasourceClosedEvent) {
 			boolean isDeleteSelectedDatasource = datasourceClosedEvent.getDatasource() == datasource.getSelectedDatasource();
-			resetComboBox(Application.getActiveApplication().getWorkspace().getDatasources(), datasource.getSelectedDatasource());
+			resetDatasourceComboBox(Application.getActiveApplication().getWorkspace().getDatasources(), datasource.getSelectedDatasource());
 			if (isDeleteSelectedDatasource) {
 				datasource.setSelectedIndex(-1);
 				if (datasource.getItemCount() > 0) {
@@ -77,7 +77,7 @@ public class ParameterTargetCoordSysPanel extends PanelTargetCoordSys implements
 			@Override
 			public void workspaceOpened(WorkspaceOpenedEvent workspaceOpenedEvent) {
 				removeDatasourcesListener();
-				resetComboBox(Application.getActiveApplication().getWorkspace().getDatasources(), null);
+				resetDatasourceComboBox(Application.getActiveApplication().getWorkspace().getDatasources(), null);
 				addDatasourcesListeners();
 			}
 		});
@@ -85,7 +85,7 @@ public class ParameterTargetCoordSysPanel extends PanelTargetCoordSys implements
 			@Override
 			public void workspaceClosing(WorkspaceClosingEvent workspaceClosingEvent) {
 				removeDatasourcesListener();
-				resetComboBox(Application.getActiveApplication().getWorkspace().getDatasources(), null);
+				resetDatasourceComboBox(Application.getActiveApplication().getWorkspace().getDatasources(), null);
 				addDatasourcesListeners();
 			}
 		});
