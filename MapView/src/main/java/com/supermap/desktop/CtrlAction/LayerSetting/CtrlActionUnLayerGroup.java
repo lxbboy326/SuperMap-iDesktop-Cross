@@ -9,20 +9,19 @@ import com.supermap.desktop.ui.UICommonToolkit;
 import com.supermap.desktop.ui.controls.LayersTree;
 import com.supermap.desktop.ui.controls.NodeDataType;
 import com.supermap.desktop.ui.controls.TreeNodeData;
+import com.supermap.mapping.Layer;
 import com.supermap.mapping.LayerGroup;
+import com.supermap.mapping.Map;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
-import java.util.Enumeration;
 
 /**
- * Created by lixiaoyao on 2017/10/11.
+ * Created by lixiaoyao on 2017/10/19.
  */
-public class CtrlActionCreateLayerGroup extends CtrlAction {
-
+public class CtrlActionUnLayerGroup extends CtrlAction {
 	private TreeNodeData selectedNodeData = null;
 
-	public CtrlActionCreateLayerGroup(IBaseItem caller, IForm formClass) {
+	public CtrlActionUnLayerGroup(IBaseItem caller, IForm formClass) {
 		super(caller, formClass);
 	}
 
@@ -31,15 +30,24 @@ public class CtrlActionCreateLayerGroup extends CtrlAction {
 		IForm iForm = Application.getActiveApplication().getActiveForm();
 		if (this.selectedNodeData != null && this.selectedNodeData.getData() instanceof LayerGroup &&
 				iForm != null && iForm instanceof FormMap) {
-			FormMap formMap = (FormMap) iForm;
-			String layerGroupName = formMap.getMapControl().getMap().getLayers().getAvailableCaption("LayerGroup");
-			LayerGroup layerGroup = (LayerGroup) this.selectedNodeData.getData();
-			layerGroup.addGroup(layerGroupName);
 			LayersTree layersTree = UICommonToolkit.getLayersManager().getLayersTree();
-			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) layersTree.getLastSelectedPathComponent();
-			layersTree.expandRow(layersTree.getMaxSelectionRow());
-			layersTree.setSelectionPath(layersTree.getSelectionPath().pathByAddingChild(selectedNode.getLastChild()));
-			layersTree.startEditingAtPath(layersTree.getSelectionPath().pathByAddingChild(selectedNode.getLastChild()));
+			int originSelectedRowIndex = layersTree.getRowForPath(layersTree.getSelectionPath());
+			FormMap formMap = (FormMap) iForm;
+			LayerGroup layerGroup = (LayerGroup) this.selectedNodeData.getData();
+			layerGroup.ungroup();
+			formMap.getMapControl().getMap().refresh();
+//			System.out.println("Current count is:");
+			System.out.println(formMap.getMapControl().getMap().getLayers().getCount());
+			Map map = formMap.getMapControl().getMap();
+			try {
+				for (int i = 0; i < map.getLayers().getCount(); i++) {
+					Layer layer = map.getLayers().get(i);
+				}
+			} catch (Exception ex) {
+				System.out.println("Current count is:");
+				System.out.println(map.getLayers().getCount());
+				Application.getActiveApplication().getOutput().output(ex);
+			}
 		}
 	}
 
@@ -58,15 +66,5 @@ public class CtrlActionCreateLayerGroup extends CtrlAction {
 			this.selectedNodeData = null;
 		}
 		return enable;
-	}
-
-	// 获取节点下面的所有节点，包括子节点和子节点的子节点
-	public void visitAllNodes(TreeNode node) {
-		if (node.getChildCount() >= 0) {//判断是否有子节点
-			for (Enumeration e = node.children(); e.hasMoreElements(); ) {
-				TreeNode n = (TreeNode) e.nextElement();
-				visitAllNodes(n);//若有子节点则再次查找
-			}
-		}
 	}
 }

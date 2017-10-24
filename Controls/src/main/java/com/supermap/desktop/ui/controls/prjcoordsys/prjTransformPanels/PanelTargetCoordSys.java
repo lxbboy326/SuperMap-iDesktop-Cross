@@ -25,37 +25,34 @@ import java.util.ArrayList;
  * 面板主要提供设置好的坐标系
  * <p>
  * 数据源屏蔽平面坐标系
+ * 增加来自数据集投影选择-2017.10.23yuanR
  */
 public class PanelTargetCoordSys extends JPanel {
 	/**
 	 *
 	 */
 	private JRadioButton radioButtonFromDatasource;
+	private JRadioButton radioButtonFromDataset;
 	private JRadioButton radioButtonPrjSetting;
 	private JRadioButton radioButtonImportPrjFile;
 	protected DatasourceComboBox datasource;
+	protected DatasetComboBox datasetComboBox;
 	private SmButton buttonPrjSetting;
 	private JFileChooserControl fileChooser;
 	private PanelCoordSysInfo panelCoordSysInfo;
-	private PrjCoordSys targetPrjCoordSys = null;
+	protected PrjCoordSys targetPrjCoordSys = null;
 	private PrjCoordSys buttonSetPrjCoordSys = null;
 	private PrjCoordSys importFilePrjCoordSys = null;
 	protected DoSome doSome;
 
-	/**
-	 * 获得设置好的坐标系
-	 *
-	 * @return
-	 */
-	public PrjCoordSys getTargetPrjCoordSys() {
-		return targetPrjCoordSys;
-	}
 
 	private ActionListener actionListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (e.getSource().equals(radioButtonFromDatasource) || e.getSource().equals(radioButtonPrjSetting) || e.getSource().equals(radioButtonImportPrjFile)) {
+			if (e.getSource().equals(radioButtonFromDatasource) || e.getSource().equals(radioButtonFromDataset)
+					|| e.getSource().equals(radioButtonPrjSetting) || e.getSource().equals(radioButtonImportPrjFile)) {
 				datasource.setEnabled(radioButtonFromDatasource.isSelected());
+				datasetComboBox.setEnabled(radioButtonFromDataset.isSelected());
 				buttonPrjSetting.setEnabled(radioButtonPrjSetting.isSelected());
 				fileChooser.setEnabled(radioButtonImportPrjFile.isSelected());
 				// 坐标系来自数据源
@@ -65,6 +62,15 @@ public class PanelTargetCoordSys extends JPanel {
 					} else {
 						targetPrjCoordSys = null;
 					}
+				} else if (radioButtonFromDataset.isSelected()) {
+					if (datasetComboBox.getSelectedDataset() != null) {
+						targetPrjCoordSys = datasetComboBox.getSelectedDataset().getPrjCoordSys();
+					} else {
+						targetPrjCoordSys = null;
+					}
+				} else if (radioButtonImportPrjFile.isSelected()) {
+					// 坐标系来自设置，当设置过一次后用buttonSetprjCoordSys记录上次设置的坐标系
+					targetPrjCoordSys = buttonSetPrjCoordSys;
 				} else if (radioButtonPrjSetting.isSelected()) {
 					// 坐标系来自设置，当设置过一次后用buttonSetprjCoordSys记录上次设置的坐标系
 					targetPrjCoordSys = buttonSetPrjCoordSys;
@@ -89,13 +95,25 @@ public class PanelTargetCoordSys extends JPanel {
 		}
 	};
 
-	private ItemListener datasourceChangedListener = new ItemListener() {
+	private ItemListener itemListener = new ItemListener() {
 		@Override
 		public void itemStateChanged(ItemEvent e) {
-			if (datasource.getSelectedDatasource() != null) {
-				targetPrjCoordSys = datasource.getSelectedDatasource().getPrjCoordSys();
-			} else {
-				targetPrjCoordSys = null;
+			if (e.getSource() == datasource) {
+
+				if (datasource.getSelectedDatasource() != null) {
+					datasetComboBox.removeItemListener(itemListener);
+					resetDatasetComboBox(datasource.getSelectedDatasource(), null);
+					datasetComboBox.addItemListener(itemListener);
+					targetPrjCoordSys = datasource.getSelectedDatasource().getPrjCoordSys();
+				} else {
+					targetPrjCoordSys = null;
+				}
+			} else if (e.getSource() == datasetComboBox) {
+				if (datasetComboBox.getSelectedDataset() != null) {
+					targetPrjCoordSys = datasetComboBox.getSelectedDataset().getPrjCoordSys();
+				} else {
+					targetPrjCoordSys = null;
+				}
 			}
 			setPrjCoordSysInfo(targetPrjCoordSys);
 		}
@@ -125,17 +143,22 @@ public class PanelTargetCoordSys extends JPanel {
 
 	private void initializeComponents() {
 		this.radioButtonFromDatasource = new JRadioButton();
+		this.radioButtonFromDataset = new JRadioButton();
 		this.radioButtonPrjSetting = new JRadioButton();
 		this.radioButtonImportPrjFile = new JRadioButton();
 
 		ButtonGroup bufferTypeButtonGroup = new ButtonGroup();
 		bufferTypeButtonGroup.add(this.radioButtonFromDatasource);
+		bufferTypeButtonGroup.add(this.radioButtonFromDataset);
 		bufferTypeButtonGroup.add(this.radioButtonPrjSetting);
 		bufferTypeButtonGroup.add(this.radioButtonImportPrjFile);
 
 		this.datasource = new DatasourceComboBox();
+		this.datasetComboBox = new DatasetComboBox();
 		// 获得有投影坐标系的数据源
-		resetComboBox(Application.getActiveApplication().getWorkspace().getDatasources(), null);
+		resetDatasourceComboBox(Application.getActiveApplication().getWorkspace().getDatasources(), null);
+		resetDatasetComboBox(this.datasource.getSelectedDatasource(), null);
+
 		this.buttonPrjSetting = new SmButton();
 
 		String moduleName = "ImportPrjFile";
@@ -157,6 +180,7 @@ public class PanelTargetCoordSys extends JPanel {
 
 	private void initializeResources() {
 		this.radioButtonFromDatasource.setText(ControlsProperties.getString("String_Label_FromDatasource"));
+		this.radioButtonFromDataset.setText(ControlsProperties.getString("String_Label_FromDataset"));
 		this.radioButtonPrjSetting.setText(ControlsProperties.getString("String_Label_CustomPrjCoordSysSetting"));
 		this.radioButtonImportPrjFile.setText(ControlsProperties.getString("String_Label_ImportPrjCoordSysFile"));
 		this.buttonPrjSetting.setText(ControlsProperties.getString("String_Button_Setting"));
@@ -172,10 +196,12 @@ public class PanelTargetCoordSys extends JPanel {
 				.addGroup(groupLayout.createSequentialGroup()
 						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(this.radioButtonFromDatasource)
+								.addComponent(this.radioButtonFromDataset)
 								.addComponent(this.radioButtonPrjSetting)
 								.addComponent(this.radioButtonImportPrjFile))
 						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 								.addComponent(this.datasource)
+								.addComponent(this.datasetComboBox)
 								.addComponent(this.buttonPrjSetting, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 								.addComponent(this.fileChooser)))
 				.addGroup(groupLayout.createSequentialGroup()
@@ -185,6 +211,9 @@ public class PanelTargetCoordSys extends JPanel {
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(this.radioButtonFromDatasource)
 						.addComponent(this.datasource, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+						.addComponent(this.radioButtonFromDataset)
+						.addComponent(this.datasetComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(this.radioButtonPrjSetting)
 						.addComponent(this.buttonPrjSetting, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
@@ -197,8 +226,10 @@ public class PanelTargetCoordSys extends JPanel {
 
 	private void initListener() {
 		removeListener();
-		this.datasource.addItemListener(this.datasourceChangedListener);
+		this.datasource.addItemListener(this.itemListener);
+		this.datasetComboBox.addItemListener(this.itemListener);
 		this.radioButtonFromDatasource.addActionListener(this.actionListener);
+		this.radioButtonFromDataset.addActionListener(this.actionListener);
 		this.radioButtonPrjSetting.addActionListener(this.actionListener);
 		this.radioButtonImportPrjFile.addActionListener(this.actionListener);
 		this.buttonPrjSetting.addActionListener(this.actionListener);
@@ -206,8 +237,10 @@ public class PanelTargetCoordSys extends JPanel {
 	}
 
 	private void removeListener() {
-		this.datasource.removeItemListener(this.datasourceChangedListener);
+		this.datasource.removeItemListener(this.itemListener);
+		this.datasetComboBox.removeItemListener(this.itemListener);
 		this.radioButtonFromDatasource.removeActionListener(this.actionListener);
+		this.radioButtonFromDataset.removeActionListener(this.actionListener);
 		this.radioButtonPrjSetting.removeActionListener(this.actionListener);
 		this.radioButtonImportPrjFile.removeActionListener(this.actionListener);
 		this.buttonPrjSetting.removeActionListener(this.actionListener);
@@ -221,6 +254,7 @@ public class PanelTargetCoordSys extends JPanel {
 	 * 默认使用数据源的坐标系，当打开的数据源没有坐标系时，坐标系获取方式为设置坐标系
 	 */
 	private void initStates() {
+		this.datasetComboBox.setEnabled(false);
 		if (this.datasource.getSelectedDatasource() != null) {
 			this.radioButtonFromDatasource.setSelected(true);
 			this.buttonPrjSetting.setEnabled(false);
@@ -282,7 +316,7 @@ public class PanelTargetCoordSys extends JPanel {
 	 * @param datasources
 	 * @param selectedDatasource
 	 */
-	protected void resetComboBox(Datasources datasources, Datasource selectedDatasource) {
+	protected void resetDatasourceComboBox(Datasources datasources, Datasource selectedDatasource) {
 		// 获得有投影坐标系的数据源
 		ArrayList<Datasource> datasourceArray = new ArrayList<>();
 		if (null != datasources) {
@@ -294,6 +328,25 @@ public class PanelTargetCoordSys extends JPanel {
 		}
 		if (null != datasource) {
 			datasource.resetComboBox(datasourceArray, selectedDatasource);
+		}
+	}
+
+	/**
+	 * 当tree中数据改变时，当前面板comboBox中的项也发生改变
+	 * comboBox中的项过滤掉平面坐标系的数据源
+	 *
+	 * @param datasource
+	 * @param selectedDatasource
+	 */
+	protected void resetDatasetComboBox(Datasource datasource, Datasource selectedDatasource) {
+		// 获得有投影坐标系的数据源
+		if (null != datasource) {
+			datasetComboBox.setDatasets(datasource.getDatasets());
+			for (int i = 0; i < datasource.getDatasets().getCount(); i++) {
+				if (datasetComboBox.getDatasets().get(i).getPrjCoordSys().getType() == PrjCoordSysType.PCS_NON_EARTH) {
+					datasetComboBox.removeItem(datasource.getDatasets().get(i));
+				}
+			}
 		}
 	}
 }

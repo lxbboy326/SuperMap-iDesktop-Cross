@@ -797,7 +797,10 @@ public class LayersTree extends JTree {
 				DefaultMutableTreeNode removedNode = groupNodeMap.get(layerGroup);
 
 				if (parentNode != null && removedNode != null) {
-					parentNode.remove(removedNode);
+					// fix by lixiaoyao 移除图层分组时应该移除model中的节点，不是父节点中子节点
+					DefaultTreeModel model = (DefaultTreeModel) getModel();
+					model.removeNodeFromParent(removedNode);
+//					parentNode.remove(removedNode);
 				}
 			} else {
 				DefaultTreeModel model = (DefaultTreeModel) getModel();

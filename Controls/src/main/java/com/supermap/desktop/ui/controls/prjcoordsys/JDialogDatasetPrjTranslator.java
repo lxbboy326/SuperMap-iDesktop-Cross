@@ -51,7 +51,7 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 	private transient PrjCoordSys targetPrj = null;
 
 	private Boolean isOKSourcePrj = false;
-	//private Boolean isOKTargetPrj = false;
+	private Boolean isOKTargetPrj = false;
 	private Boolean isHasResultDataset = false;
 
 
@@ -95,12 +95,12 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 		@Override
 		public void setTargetPrjCoordSys(PrjCoordSys targetPrjCoordSys) {
 			targetPrj = targetPrjCoordSys;
+			isOKTargetPrj = null != targetPrj;
 		}
 
 		@Override
 		public void setOKButtonEnabled(boolean isEnabled) {
-			panelButton.getButtonOk().setEnabled(isEnabled && isOKSourcePrj && isHasResultDataset);
-
+			panelButton.getButtonOk().setEnabled(isEnabled && isOKSourcePrj && isHasResultDataset && isOKTargetPrj);
 		}
 	};
 
@@ -189,7 +189,7 @@ public class JDialogDatasetPrjTranslator extends SmDialog {
 			this.isOKSourcePrj = dataset.getPrjCoordSys().getType() != PrjCoordSysType.PCS_NON_EARTH;
 			//this.isOKTargetPrj = null != panelTargetCoordSys.getTargetPrjCoordSys();
 			this.isHasResultDataset = null != panelResultDataset.getComboBoxResultDataDatasource().getSelectedDatasource();
-			this.panelButton.getButtonOk().setEnabled(isHasResultDataset && isOKSourcePrj);
+			this.panelButton.getButtonOk().setEnabled(isHasResultDataset && isOKSourcePrj && targetPrj != null);
 		} else {
 			this.panelButton.getButtonOk().setEnabled(false);
 		}

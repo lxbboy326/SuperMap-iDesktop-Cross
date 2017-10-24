@@ -3,7 +3,6 @@ package com.supermap.desktop.ui.controls.prjcoordsys;
 import com.supermap.data.*;
 import com.supermap.desktop.Application;
 import com.supermap.desktop.controls.ControlsProperties;
-import com.supermap.desktop.controls.utilities.WorkspaceTreeManagerUIUtilities;
 import com.supermap.desktop.core.Time;
 import com.supermap.desktop.core.TimeType;
 import com.supermap.desktop.progress.Interface.UpdateProgressCallable;
@@ -87,8 +86,6 @@ public class DatasetPrjTranslatorCallable extends UpdateProgressCallable {
 							.output(MessageFormat.format(ControlsProperties.getString("String_CoordSysTrans_Failed"),
 									this.getSourceDataset.getName(), this.getSourceDataset.getDatasource().getAlias()));
 				}
-				// 这种转换方式主要针对非矢量数据，转换之后会生成新的数据集，但是树的显示状态很诡异，这里对目标数据源的节点进行一次刷新
-				WorkspaceTreeManagerUIUtilities.refreshNode(this.getSelectedResultDatasource);
 			}
 		} catch (Exception e) {
 			result = false;
